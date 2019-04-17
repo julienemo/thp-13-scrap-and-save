@@ -1,26 +1,29 @@
+require_relative "scrap.rb"
 require 'bundler'
 Bundler.require
 
 
+
 class MailList
-  attr_accessor:original_scrap, :huge_hash
-  attr_reader:nb_cols
+  attr_accessor :original_scrap
+  attr_reader :nb_cols, :save_path
 
 #=====public methods
-  def initialize(original_scrap)
+  def initialize(original_scrap, save_path = nil)
     @original_scrap = original_scrap
     @nb_cols = 2
-    @huge_hash = {"APATOU"=>"mairie_sans_email", "AWALA-YALIMAPOa"=>"mairie@awala-yalimapo.fr", "CAMOPI"=>"mairie.camopi@yahoo.fr"}
+    @save_path = save_path || File.expand_path("../../db/", __dir__)
   end
 
   def save_as_csv_doc
-    csv_string = @original_scrap
+    csv_string = convert_to_csv_string
     puts "list converted to string of csv format"
     time_id = (Time.now).to_s.split(" ")[0..1].join("_")
-    csv_doc = File.open("../../db/mails_mairie_#{time_id}.csv", "w")
+    filepath = File.expand_path("mails_mairie_#{time_id}.csv", save_path)
+    csv_doc = File.open(filepath, "w")
     csv_doc.puts(csv_string)
     csv_doc.close
-    puts "emails written in file ../../db/mails_marie_#{time_id}.csv"
+    puts "emails written in file #{filepath}"
   end
 
   def save_as_gsheet
@@ -37,6 +40,8 @@ class MailList
     end
     work_sheet.save
     puts "google sheet written"
+    puts "here is the url"
+    puts "https://docs.google.com/spreadsheets/d/1EF6_Y6WOy9PwIrF24Q9f4ow05CDqjvP6_1uzCl9R7-U/edit#gid=0"
   end
 
   def save_as_json
@@ -44,10 +49,11 @@ class MailList
     json_string = unic_hash.to_json
     puts "list converted to string of json format"
     time_id = (Time.now).to_s.split(" ")[0..1].join("_")
-    json_doc = File.open("../../db/mails_mairie_#{time_id}.json", "w")
+    filepath = File.expand_path("mails_mairie_#{time_id}.json", save_path)
+    json_doc = File.open(filepath, "w")
     json_doc.puts(json_string)
     json_doc.close
-    puts "emails written in file ../../db/mails_marie_#{time_id}.json"
+    puts "emails written in file #{filepath}"
   end
 
 #========private methods
@@ -90,3 +96,7 @@ class MailList
   end
 
 end
+
+# scrap = Scrap.new("https://www.annuaire-des-mairies.com/guyane.html")
+# list = MailList.new(scrap.emails)
+# list.save_as_gsheet

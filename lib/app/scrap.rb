@@ -2,11 +2,12 @@ require 'bundler'
 Bundler.require
 
 class Scrap
-  attr_accessor:annuaire_url
+  attr_accessor :annuaire_url
+  attr_reader :emails
 
   def initialize(annuaire_url)
     @annuaire_url = annuaire_url
-    get_all_emails(annuaire_url)
+    @emails = get_all_emails(annuaire_url)
   end
 
   private
@@ -17,7 +18,7 @@ class Scrap
     list.each do |mairie|
       email_list << get_townhall_email(mairie)
     end
-    p email_list
+    email_list
   end
 
   def get_townhall_urls(annuaire_url)
@@ -60,4 +61,4 @@ class Scrap
   end
 end
 
-Scrap.new("https://www.annuaire-des-mairies.com/guyane.html")
+#Scrap.new("https://www.annuaire-des-mairies.com/guyane.html")
